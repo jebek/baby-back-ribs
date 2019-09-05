@@ -167,10 +167,33 @@ let initGame = () => {
   /* SCENE */
   scene.add( camera, directionalLight, hemisphereLight, plane );
   window.scene = scene;
+
+  render();
+
+  let $start = document.querySelector('#start');
+  let $restart = document.querySelector('#restart');
+
+  $start.onclick = () => {
+    runGame();
+    $start.classList.add('hidden');
+  };
+
+  $restart.onclick = () => {
+    courseObjects.forEach(obj => {
+      scene.remove(obj.mesh);
+    })
+
+    courseObjects = [];
+
+    runGame();
+    $restart.classList.add('hidden');
+  };
 }
 
 let gameOver = () => {
+  let $restart = document.querySelector('#restart');
 
+  $restart.classList.remove('hidden');
 }
 
 let update = () => {
@@ -183,10 +206,11 @@ let update = () => {
   let isCollided = detectCollisions( courseObjects );
 
   if ( isCollided ) {
-  cancelAnimationFrame(globalRenderID);
+    cancelAnimationFrame(globalRenderID);
+    gameOver();
   } else {
-  globalRenderID = requestAnimationFrame(update);
-  render();
+    globalRenderID = requestAnimationFrame(update);
+    render();
   }
 }
 
@@ -212,4 +236,4 @@ let runGame = () => {
 }
 
 initGame();
-runGame();
+//runGame();

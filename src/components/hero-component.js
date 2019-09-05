@@ -1,8 +1,8 @@
 
 const PLANE_LENGTH = 1000;
 const HERO_BASE_Y=1.8;
-const LEFT_SPIN_VALUE = 0.4;
-const RIGHT_SPIN_VALUE = -0.4;
+const LEFT_SPIN_VALUE = -0.4;
+const RIGHT_SPIN_VALUE = 0.4;
 
 class Hero {
   constructor(geometry, material) {
