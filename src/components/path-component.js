@@ -6,13 +6,17 @@ const PLANE_LENGTH = 1000;
 const PLANE_WIDTH = 50;
 const PADDING = PLANE_WIDTH / 5 * 2;
 const COURSE_OBJECT_COUNT = 5;
+const WALL_COUNT = 1;
 
 class Path {
-  constructor(hero, turn) {
+  constructor(hero, position, turn) {
     this.courseObjects = [];
     this.walls = [];
-    this.hero = hero
+    this.hero = hero;
     this.group = new THREE.Group();
+    this.group.position.x = position ? position.x : 0;
+    this.group.position.y = position ? position.y : 0;
+    this.group.position.z = position ? position.z : 0;
     this.turn = turn;
     this.paused = false;
   }
@@ -22,6 +26,7 @@ class Path {
 
     self.wallSpawnIntervalID = window.setInterval( function () {
     
+      if ( self.walls.length < WALL_COUNT ) {
         const geometry = new THREE.BoxGeometry(20, 20, 2, 2);
         
         let objectMaterial = new THREE.MeshPhongMaterial( {
@@ -29,16 +34,18 @@ class Path {
           flatShading: THREE.FlatShading
         });
 
-        let plusOrMinus = Math.random() < 0.5 ? -1 : 1;
+        self.plusOrMinus = Math.random() < 0.5 ? -1 : 1;
+        self.direction = self.plusOrMinus > 0 ? 'left' : 'right';
 
-        let rotation = 2 * plusOrMinus;
+        let rotation = 2 * self.plusOrMinus;
 
         let wall = new Wall(geometry, objectMaterial, rotation);
         self.walls.push( wall );
 
         self.group.add( wall.mesh );
+      }
 
-    }, 1000 );
+    }, 10000 );
   }
 
   _initBacks() {
@@ -149,6 +156,12 @@ class Path {
     this.paused = true;
     clearInterval(this.wallSpawnIntervalID);
     clearInterval(this.courseObjectSpawnIntervalID);
+  }
+
+  playGame() {
+    this.paused = false;
+    this._initWalls();
+    this._initBacks();
   }
 
   update() {

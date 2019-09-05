@@ -1,6 +1,5 @@
 
 const PLANE_LENGTH = 1000;
-const HERO_BASE_Y=1.8;
 const LEFT_SPIN_VALUE = -0.4;
 const RIGHT_SPIN_VALUE = 0.4;
 
@@ -15,6 +14,8 @@ class Hero {
     this.spinValue = 0;
     this.spinDirection = 'left';
     this.spinning = false;
+    this.turn = false;
+    this.heroBaseY=1.8;
   }
 
   spin(direction) {
@@ -37,6 +38,18 @@ class Hero {
     this.bounceValue = 0.2;
   }
 
+  changeDirection(direction, posDelta) {
+    console.log(this.mesh.position);
+    let self = this;
+    this.turn = true;
+    this.turnDirection = direction;
+    this.posDelta = posDelta;
+
+    setTimeout(()=> {
+      self.turn = false;
+    }, 1000);
+  }
+
   update() {
 
     if (this.spinning) {
@@ -53,7 +66,15 @@ class Hero {
       }
     }
 
-    if (this.mesh.position.y<=HERO_BASE_Y) {
+    if (this.turn) {
+      this.heroBaseY += this.posDelta.y/60;
+      this.mesh.position.x += this.posDelta.x/60; //(this.newPosition.x - this.mesh.position.x)/60;
+      this.mesh.position.y += this.posDelta.y/60; //(this.newPosition.y - this.mesh.position.y)/60;
+      this.mesh.position.z += this.posDelta.z/60; //(this.newPosition.z - this.mesh.position.z)/60;
+      return;
+    }
+
+    if (this.mesh.position.y<=this.heroBaseY) {
       if (this.jumping) {
         this.jumping = false;
       } else {
@@ -64,7 +85,7 @@ class Hero {
       this.bounceValue-=this.gravity;
     }
 
-    this.mesh.position.y = Math.max(this.mesh.position.y + this.bounceValue, HERO_BASE_Y);
+    this.mesh.position.y = Math.max(this.mesh.position.y + this.bounceValue, this.heroBaseY);
     this.mesh.rotation.y = this.mesh.rotation.y + this.spinValue;
 
   }

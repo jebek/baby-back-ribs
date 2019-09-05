@@ -22,6 +22,41 @@ let renderer,
 
 let turn = () => {
   pauseGame();
+
+  let posX = paths[0].direction === 'left' ? -20 : 20;
+
+  let position = {
+    x: posX,
+    y: 10,
+    z: -60
+  }
+
+  path = new Path(hero, position, turn);
+
+  path.initPlane();
+  // path.transitionIn();
+  paths.push(path);
+
+  window.paths = paths;
+  window.camera = camera;
+
+  /* SCENE */
+  scene.add( paths[1].group );
+
+  let posDelta = {
+    x: position.x - paths[0].group.position.x,
+    y: position.y - paths[0].group.position.y,
+    z: position.z - paths[0].group.position.z
+  };
+
+  hero.changeDirection(paths[0].direction, posDelta);
+
+  setTimeout(() => {
+    scene.remove(paths[0].group);
+    paths.shift();
+
+    paths[0].playGame();
+  }, 1000);
 };
 
 let initHero = () => {
@@ -84,7 +119,13 @@ let initGame = () => {
   /* HERO */
   initHero();
 
-  path = new Path(hero, turn);
+  let position = {
+    x: 0,
+    y: 0,
+    z: 0
+  }
+
+  path = new Path(hero, position, turn);
 
   path.initPlane();
   paths.push(path);
