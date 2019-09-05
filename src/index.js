@@ -1,18 +1,8 @@
 import _ from 'lodash';
 import './styles/style.sass';
 
-// function component() {
-//   const element = document.createElement('div');
-
-//   element.innerHTML = _.join(['Hello', 'webpack'], ' ');
-
-//   return element;
-// }
-
-// document.body.appendChild(component());
-
 import Hero from './components/hero-component.js';
-import Back from './components/back-component.js';
+import Path from './components/path-component.js';
 
 const PLANE_LENGTH = 1000;
 const PLANE_WIDTH = 50;
@@ -27,68 +17,12 @@ let renderer,
   globalRenderID,
   canvasWidth,
   canvasHeight,
-  courseObjectSpawnIntervalID,
-  courseObject = {},   
-  courseObjects = [];
+  path,
+  paths = [];
 
-let getRandomInteger = ( min, max ) => {
-  return Math.floor( Math.random() * ( max - min + 1 ) ) + min;
-}
-
-let initBacks = () => {
-  courseObjectSpawnIntervalID = window.setInterval( function () {
-  
-  if ( courseObjects.length < COURSE_OBJECT_COUNT ) {
-    const verticesOfCube = [
-      -1, -1, -1,    1, -1, -1,    1,  1, -1,    -1,  1, -1,
-      -1, -1,  1,    1, -1,  1,    1,  1,  1,    -1,  1,  1,
-    ];
-    const indicesOfFaces = [
-      2, 1, 0,    0, 3, 2,
-      0, 4, 7,    7, 3, 0,
-      0, 1, 5,    5, 4, 0,
-      1, 2, 6,    6, 5, 1,
-      2, 3, 7,    7, 6, 2,
-      4, 5, 6,    6, 7, 4,
-    ];
-    const radius = 2;
-    const detail = 2;
-    const geometry = new THREE.PolyhedronBufferGeometry(verticesOfCube, indicesOfFaces, radius, detail);
-    
-    let objectMaterial = new THREE.MeshPhongMaterial( {
-    color: 0x29B6F6,
-    flatShading: THREE.FlatShading
-    });
-
-    courseObject = new Back(geometry, objectMaterial);
-    courseObjects.push( courseObject );
-    scene.add( courseObject.mesh );
-  }
-
-  }, 4000 );
-}
-
-let detectCollisions = ( objects ) => {
-
-  let courseObjects = objects.map(obj => obj.mesh);
-  let rayJump = new THREE.Raycaster( hero.mesh.position, new THREE.Vector3(0, -1, 0) );
-  let rayCollision = new THREE.Raycaster( hero.mesh.position, new THREE.Vector3(0, 0, -1));
-
-
-  let intersections = rayJump.intersectObjects( courseObjects );
-  let collisionIntersections = rayCollision.intersectObjects( courseObjects );
-
-  if ( intersections.length > 0 && intersections[0].distance < 2) {
-    hero.jump();
-    return false;
-  }
-
-  if ( collisionIntersections.length > 0 && collisionIntersections[0].distance < 5) {
-    return true;
-  }
-
-  return false;
-}  
+let turn = () => {
+  pauseGame();
+};
 
 let initHero = () => {
 
@@ -141,32 +75,22 @@ let initGame = () => {
   camera = new THREE.PerspectiveCamera( 45, canvasWidth / canvasHeight, 1, 3000 );
   camera.position.set( 0, PLANE_LENGTH / 125, PLANE_LENGTH / 2 + PLANE_LENGTH / 25 );
 
-
-  /* TRACK */
-  let planeGeometry = new THREE.BoxGeometry( PLANE_WIDTH, PLANE_LENGTH + PLANE_LENGTH / 10, 1 );
-  let planeMaterial = new THREE.MeshLambertMaterial( {
-  color: 0x000000
-  } );
-  let plane = new THREE.Mesh( planeGeometry, planeMaterial );
-  plane.rotation.x = 1.770;
-  plane.receiveShadow = true;
-
-
   /* LIGHTS */
   let directionalLight = new THREE.DirectionalLight( 0xffffff, 1 );
   directionalLight.position.set( 0, 1, 0 );
   let hemisphereLight = new THREE.HemisphereLight( 0xFFB74D, 0x37474F, 1 );
   hemisphereLight.position.y = 500;
 
-  /* BACKS */
-  initBacks();
-
   /* HERO */
   initHero();
 
+  path = new Path(hero, turn);
+
+  path.initPlane();
+  paths.push(path);
+
   /* SCENE */
-  scene.add( camera, directionalLight, hemisphereLight, plane );
-  window.scene = scene;
+  scene.add( camera, directionalLight, hemisphereLight, paths[0].group );
 
   render();
 
@@ -179,33 +103,32 @@ let initGame = () => {
   };
 
   $restart.onclick = () => {
-    courseObjects.forEach(obj => {
-      scene.remove(obj.mesh);
-    })
-
-    courseObjects = [];
-
     runGame();
     $restart.classList.add('hidden');
   };
+
+  window.addEventListener( 'resize', onWindowResize );
+  onWindowResize();
 }
 
 let gameOver = () => {
   let $restart = document.querySelector('#restart');
 
+  paths[0].pauseGame();
+
   $restart.classList.remove('hidden');
 }
 
 let update = () => {
+
   hero.update();
 
-  courseObjects.forEach( function ( element, index ) {
-  courseObjects[ index ].animate();
-  });
+  paths[0].update();
 
-  let isCollided = detectCollisions( courseObjects );
+  let isCollided = paths[0].detectCollisions();
+  let hitWall = paths[0].detectWall();
 
-  if ( isCollided ) {
+  if ( isCollided || hitWall) {
     cancelAnimationFrame(globalRenderID);
     gameOver();
   } else {
@@ -215,10 +138,9 @@ let update = () => {
 }
 
 let render = () => {
-  //globalRenderID = requestAnimationFrame( render );
-  
   renderer.render( scene, camera );
 }
+window.render = render;
 
 let onWindowResize = () => {
 
@@ -229,11 +151,15 @@ let onWindowResize = () => {
   camera.updateProjectionMatrix();
 }
 
+let pauseGame = () => {
+  paths[0].pauseGame();
+}
+
 let runGame = () => {
-  window.addEventListener( 'resize', onWindowResize );
+
+  paths[0].init();
+
   update();
-  onWindowResize();
 }
 
 initGame();
-//runGame();
