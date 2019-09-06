@@ -209,6 +209,7 @@ let pauseGame = () => {
 let runGame = () => {
 
   paths[0].init();
+  paths[0].playGame();
 
   update();
 }
