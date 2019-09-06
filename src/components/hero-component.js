@@ -28,7 +28,6 @@ class Hero {
     this.spinning = true;
     this.mesh.rotation.y += 0.4;
 
-
     this.jumping = true;
     this.bounceValue = 0.15;
   }
@@ -39,7 +38,6 @@ class Hero {
   }
 
   changeDirection(direction, posDelta) {
-    console.log(this.mesh.position);
     let self = this;
     this.turn = true;
     this.turnDirection = direction;
@@ -68,9 +66,9 @@ class Hero {
 
     if (this.turn) {
       this.heroBaseY += this.posDelta.y/60;
-      this.mesh.position.x += this.posDelta.x/60; //(this.newPosition.x - this.mesh.position.x)/60;
-      this.mesh.position.y += this.posDelta.y/60; //(this.newPosition.y - this.mesh.position.y)/60;
-      this.mesh.position.z += this.posDelta.z/60; //(this.newPosition.z - this.mesh.position.z)/60;
+      this.mesh.position.x += this.posDelta.x/60;
+      this.mesh.position.y += this.posDelta.y/60;
+      this.mesh.position.z += this.posDelta.z/60;
       return;
     }
 

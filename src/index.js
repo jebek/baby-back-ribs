@@ -12,6 +12,7 @@ const COURSE_OBJECT_COUNT = 5;
 let heroBaseY=1.8;
 let renderer,
   hero,
+  goal,
   scene,
   camera,
   globalRenderID,
@@ -26,19 +27,15 @@ let turn = () => {
   let posX = paths[0].direction === 'left' ? -20 : 20;
 
   let position = {
-    x: posX,
-    y: 10,
-    z: -60
+    x: paths[0].group.position.x + posX,
+    y: paths[0].group.position.y + 10,
+    z: paths[0].group.position.z + -60
   }
 
   path = new Path(hero, position, turn);
 
   path.initPlane();
-  // path.transitionIn();
   paths.push(path);
-
-  window.paths = paths;
-  window.camera = camera;
 
   /* SCENE */
   scene.add( paths[1].group );
@@ -69,23 +66,28 @@ let initHero = () => {
 
   hero = new Hero( heroGeometry, heroMaterial );
 
+      goal = new THREE.Object3D;
+    window.hero = hero;
+    goal.position.set(0, 2, -2);
+    hero.mesh.add( goal );
+
   scene.add( hero.mesh );
   
   window.addEventListener( 'keydown', () => {
 
-  if ( event.keyCode === 37 ) {
-    hero.spin('left');
-  } else if ( event.keyCode === 39 ) {
-    hero.spin('right');
-  }
+    if ( event.keyCode === 37 ) {
+      hero.spin('left');
+    } else if ( event.keyCode === 39 ) {
+      hero.spin('right');
+    }
 
-  if (hero.mesh.position.y > heroBaseY) {
-    return;
-  }
+    if (hero.mesh.position.y > hero.heroBaseY) {
+      return;
+    }
 
-  if ( event.keyCode === 38 ) {
-    hero.jump();
-  }
+    if ( event.keyCode === 38 ) {
+      hero.jump();
+    }
   } );
 }
 
@@ -109,7 +111,7 @@ let initGame = () => {
   /* CAMERA */
   camera = new THREE.PerspectiveCamera( 45, canvasWidth / canvasHeight, 1, 3000 );
   camera.position.set( 0, PLANE_LENGTH / 125, PLANE_LENGTH / 2 + PLANE_LENGTH / 25 );
-
+window.camera = camera;
   /* LIGHTS */
   let directionalLight = new THREE.DirectionalLight( 0xffffff, 1 );
   directionalLight.position.set( 0, 1, 0 );
@@ -175,6 +177,14 @@ let update = () => {
   } else {
     globalRenderID = requestAnimationFrame(update);
     render();
+  }
+
+
+  if (hero.turn) {
+    camera.position.x = hero.mesh.position.x;
+    camera.position.y = hero.mesh.position.y + 3;
+    camera.position.z = hero.mesh.position.z + 40;
+    camera.lookAt( hero.mesh.position );
   }
 }
 
