@@ -53,7 +53,7 @@ let turn = () => {
     paths.shift();
 
     paths[0].playGame();
-  }, 1000);
+  }, 300);
 };
 
 let initHero = () => {
@@ -111,7 +111,7 @@ let initGame = () => {
   /* CAMERA */
   camera = new THREE.PerspectiveCamera( 45, canvasWidth / canvasHeight, 1, 3000 );
   camera.position.set( 0, PLANE_LENGTH / 125, PLANE_LENGTH / 2 + PLANE_LENGTH / 25 );
-window.camera = camera;
+
   /* LIGHTS */
   let directionalLight = new THREE.DirectionalLight( 0xffffff, 1 );
   directionalLight.position.set( 0, 1, 0 );

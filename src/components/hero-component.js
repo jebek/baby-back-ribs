@@ -45,7 +45,7 @@ class Hero {
 
     setTimeout(()=> {
       self.turn = false;
-    }, 1000);
+    }, 300);
   }
 
   update() {
@@ -65,11 +65,15 @@ class Hero {
     }
 
     if (this.turn) {
-      this.heroBaseY += this.posDelta.y/60;
-      this.mesh.position.x += this.posDelta.x/60;
-      this.mesh.position.y += this.posDelta.y/60;
-      this.mesh.position.z += this.posDelta.z/60;
-      return;
+      if (this.heroBaseY === this.posDelta.y) {
+        this.turn = false;
+      } else {
+        this.heroBaseY += this.posDelta.y/18;
+        this.mesh.position.x += this.posDelta.x/18;
+        this.mesh.position.y += this.posDelta.y/18;
+        this.mesh.position.z += this.posDelta.z/18;
+        return;
+      }
     }
 
     if (this.mesh.position.y<=this.heroBaseY) {
