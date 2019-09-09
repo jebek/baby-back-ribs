@@ -7,7 +7,7 @@ const COURSE_OBJECT_COUNT = 5;
 class Back {
   constructor(geometry, material) {
     this.mesh = new THREE.Mesh( geometry, material );
-    this.mesh.position.set( 0, 0, -( PLANE_LENGTH - PADDING ) / 7);
+    this.mesh.position.set( 0, 0, -( PLANE_LENGTH - PADDING ) / 14);
     this.mesh.castShadow = true;
     this.mesh.receiveShadow = true;
   }

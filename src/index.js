@@ -32,8 +32,8 @@ let turn = () => {
   }
 
   path = new Path(hero, position, turn);
-
   path.initPlane();
+  path.init();
   paths.push(path);
 
   /* SCENE */
@@ -167,7 +167,6 @@ let update = () => {
   hero.update();
 
   paths.forEach(path => {
-
     if (!path.paused) {
       if ( path.group.position.z < PLANE_LENGTH ) {
         path.group.position.z += 2;

@@ -16,6 +16,7 @@ class Hero {
     this.spinning = false;
     this.turn = false;
     this.heroBaseY=1.8;
+    this.heroBaseX=0;
   }
 
   spin(direction) {
@@ -42,14 +43,10 @@ class Hero {
     this.turn = true;
     this.turnDirection = direction;
     this.posDelta = posDelta;
-
-    setTimeout(()=> {
-      self.turn = false;
-    }, 300);
+    this.heroBaseX += posDelta.x;
   }
 
   update() {
-
     if (this.spinning) {
       if (Math.abs(this.mesh.rotation.y) > 10) {
         this.mesh.rotation.y = 0;
@@ -65,13 +62,12 @@ class Hero {
     }
 
     if (this.turn) {
-      if (this.heroBaseY === this.posDelta.y) {
+      if (this.mesh.position.x === this.heroBaseX) {
         this.turn = false;
       } else {
-        this.heroBaseY += this.posDelta.y/18;
-        this.mesh.position.x += this.posDelta.x/18;
-        this.mesh.position.y += this.posDelta.y/18;
-        this.mesh.position.z += this.posDelta.z/18;
+        this.heroBaseY += this.posDelta.y/10;
+        this.mesh.position.x += this.posDelta.x/10;
+        this.mesh.position.y += this.posDelta.y/10;
         return;
       }
     }

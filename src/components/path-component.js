@@ -3,7 +3,7 @@ import Back from './back-component.js';
 import Wall from './wall-component.js';
 
 const PLANE_LENGTH = 1000;
-const PLANE_WIDTH = 50;
+const PLANE_WIDTH = 10;
 const PADDING = PLANE_WIDTH / 5 * 2;
 
 class Path {
@@ -13,6 +13,7 @@ class Path {
     this.group.position.x = position ? position.x : 0;
     this.group.position.y = position ? position.y : 0;
     this.group.position.z = 0;
+
     this.turn = turn;
     this.paused = false;
   }
@@ -62,11 +63,9 @@ class Path {
   }
 
   init() {
-    this.group.children.forEach(obj => {
-      this.group.remove(obj.mesh);
-    });
 
     this._createWall();
+    this._createBack();
   }
 
   initPlane() {
@@ -119,7 +118,7 @@ class Path {
       let isWall = collisionIntersections[0].object.geometry.type === "BoxGeometry";
 
       if (isWall) {
-        if (this.hero.spinning) {
+        if (this.hero.spinning && this.direction === this.hero.spinDirection) {
           this.turn();
           return false;
         } else {
