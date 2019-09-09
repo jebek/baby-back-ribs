@@ -5,9 +5,9 @@ const PADDING = PLANE_WIDTH / 5 * 2;
 const COURSE_OBJECT_COUNT = 5;
 
 class Back {
-  constructor(geometry, material) {
+  constructor(geometry, material, distance) {
     this.mesh = new THREE.Mesh( geometry, material );
-    this.mesh.position.set( 0, 0, -( PLANE_LENGTH - PADDING ) / 14);
+    this.mesh.position.set( 0, 0, distance);
     this.mesh.castShadow = true;
     this.mesh.receiveShadow = true;
   }

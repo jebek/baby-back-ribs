@@ -36,7 +36,7 @@ class Path {
     this.group.add( courseObject.mesh );
   }
 
-  _createBack() {
+  _createBack(distance) {
     const verticesOfCube = [
       -1, -1, -1,    1, -1, -1,    1,  1, -1,    -1,  1, -1,
       -1, -1,  1,    1, -1,  1,    1,  1,  1,    -1,  1,  1,
@@ -58,14 +58,16 @@ class Path {
       flatShading: THREE.FlatShading
     });
 
-    let courseObject = new Back(geometry, objectMaterial);
+    let courseObject = new Back(geometry, objectMaterial, distance);
     this.group.add( courseObject.mesh );
   }
 
   init() {
 
     this._createWall();
-    this._createBack();
+    this._createBack(0);
+    this._createBack(100);
+    this._createBack(300);
   }
 
   initPlane() {
