@@ -12,15 +12,6 @@ class Wall {
     this.mesh.receiveShadow = true;
     this.mesh.rotation.y = rotation;
   }
-  
-  animate() {
-    if ( this.mesh.position.z < PLANE_LENGTH / 2 + PLANE_LENGTH / 10 ) {
-      this.mesh.position.z += 2;
-    } else {
-      this.mesh.position.z = -PLANE_LENGTH / 2;
-    }
-    
-  }
 }
 
 export default Wall;

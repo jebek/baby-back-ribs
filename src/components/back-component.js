@@ -11,15 +11,6 @@ class Back {
     this.mesh.castShadow = true;
     this.mesh.receiveShadow = true;
   }
-  
-  animate() {
-    if ( this.mesh.position.z < PLANE_LENGTH / 2 + PLANE_LENGTH / 10 ) {
-      this.mesh.position.z += 2;
-    } else {
-      this.mesh.position.z = -PLANE_LENGTH / 2;
-    }
-    
-  }
 }
 
 export default Back;

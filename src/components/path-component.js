@@ -5,98 +5,68 @@ import Wall from './wall-component.js';
 const PLANE_LENGTH = 1000;
 const PLANE_WIDTH = 50;
 const PADDING = PLANE_WIDTH / 5 * 2;
-const COURSE_OBJECT_COUNT = 5;
-const WALL_COUNT = 1;
 
 class Path {
   constructor(hero, position, turn) {
-    this.courseObjects = [];
-    this.walls = [];
     this.hero = hero;
     this.group = new THREE.Group();
     this.group.position.x = position ? position.x : 0;
     this.group.position.y = position ? position.y : 0;
-    this.group.position.z = position ? position.z : 0;
+    this.group.position.z = 0;
     this.turn = turn;
     this.paused = false;
   }
 
-  _initWalls() {
-    let self = this;
-
-    self.wallSpawnIntervalID = window.setInterval( function () {
+  _createWall() {
+    const geometry = new THREE.BoxGeometry(20, 20, 2, 2);
     
-      if ( self.walls.length < WALL_COUNT ) {
-        const geometry = new THREE.BoxGeometry(20, 20, 2, 2);
-        
-        let objectMaterial = new THREE.MeshPhongMaterial( {
-          color: 0xffa500,
-          flatShading: THREE.FlatShading
-        });
+    let objectMaterial = new THREE.MeshPhongMaterial( {
+      color: 0xffa500,
+      flatShading: THREE.FlatShading
+    });
 
-        self.plusOrMinus = Math.random() < 0.5 ? -1 : 1;
-        self.direction = self.plusOrMinus > 0 ? 'left' : 'right';
+    this.plusOrMinus = Math.random() < 0.5 ? -1 : 1;
+    this.direction = this.plusOrMinus > 0 ? 'left' : 'right';
 
-        let rotation = 2 * self.plusOrMinus;
+    let rotation = 2 * this.plusOrMinus;
 
-        let wall = new Wall(geometry, objectMaterial, rotation);
-        self.walls.push( wall );
+    let courseObject = new Wall(geometry, objectMaterial, rotation);
 
-        self.group.add( wall.mesh );
-      }
-
-    }, 10000 );
+    this.group.add( courseObject.mesh );
   }
 
-  _initBacks() {
-    let self = this;
+  _createBack() {
+    const verticesOfCube = [
+      -1, -1, -1,    1, -1, -1,    1,  1, -1,    -1,  1, -1,
+      -1, -1,  1,    1, -1,  1,    1,  1,  1,    -1,  1,  1,
+    ];
+    const indicesOfFaces = [
+      2, 1, 0,    0, 3, 2,
+      0, 4, 7,    7, 3, 0,
+      0, 1, 5,    5, 4, 0,
+      1, 2, 6,    6, 5, 1,
+      2, 3, 7,    7, 6, 2,
+      4, 5, 6,    6, 7, 4,
+    ];
+    const radius = 2;
+    const detail = 2;
+    const geometry = new THREE.PolyhedronBufferGeometry(verticesOfCube, indicesOfFaces, radius, detail);
+    
+    let objectMaterial = new THREE.MeshPhongMaterial( {
+      color: 0x29B6F6,
+      flatShading: THREE.FlatShading
+    });
 
-    this.courseObjectSpawnIntervalID = window.setInterval( function () {
-
-      if ( self.courseObjects.length < COURSE_OBJECT_COUNT ) {
-        const verticesOfCube = [
-          -1, -1, -1,    1, -1, -1,    1,  1, -1,    -1,  1, -1,
-          -1, -1,  1,    1, -1,  1,    1,  1,  1,    -1,  1,  1,
-        ];
-        const indicesOfFaces = [
-          2, 1, 0,    0, 3, 2,
-          0, 4, 7,    7, 3, 0,
-          0, 1, 5,    5, 4, 0,
-          1, 2, 6,    6, 5, 1,
-          2, 3, 7,    7, 6, 2,
-          4, 5, 6,    6, 7, 4,
-        ];
-        const radius = 2;
-        const detail = 2;
-        const geometry = new THREE.PolyhedronBufferGeometry(verticesOfCube, indicesOfFaces, radius, detail);
-        
-        let objectMaterial = new THREE.MeshPhongMaterial( {
-          color: 0x29B6F6,
-          flatShading: THREE.FlatShading
-        });
-
-        let courseObject = new Back(geometry, objectMaterial);
-        self.courseObjects.push( courseObject );
-        self.group.add( courseObject.mesh );
-      }
-
-    }, 4000 );
+    let courseObject = new Back(geometry, objectMaterial);
+    this.group.add( courseObject.mesh );
   }
 
   init() {
-    this.courseObjects.forEach(obj => {
+    this.group.children.forEach(obj => {
       this.group.remove(obj.mesh);
     });
 
-    this.walls.forEach(obj => {
-      this.group.remove(obj.mesh);
-    });
-
-    this.courseObjects = [];
-    this.walls = [];
-
-    this._initWalls();
-    this._initBacks();
+    this._createWall();
   }
 
   initPlane() {
@@ -132,10 +102,10 @@ class Path {
 
   detectCollisions() {
 
-    let courseObjects = this.courseObjects.map(obj => obj.mesh);
     let rayJump = new THREE.Raycaster( this.hero.mesh.position, new THREE.Vector3(0, -1, 0) );
     let rayCollision = new THREE.Raycaster( this.hero.mesh.position, new THREE.Vector3(0, 0, -1));
 
+    let courseObjects = this.group.children.slice(1);
     let intersections = rayJump.intersectObjects( courseObjects );
     let collisionIntersections = rayCollision.intersectObjects( courseObjects );
 
@@ -146,7 +116,18 @@ class Path {
     }
 
     if ( collisionIntersections.length > 0 && collisionIntersections[0].distance < 5) {
-      return true;
+      let isWall = collisionIntersections[0].object.geometry.type === "BoxGeometry";
+
+      if (isWall) {
+        if (this.hero.spinning) {
+          this.turn();
+          return false;
+        } else {
+          return true;
+        }
+      } else {
+        return true;
+      }
     }
 
     return false;
@@ -154,28 +135,10 @@ class Path {
 
   pauseGame() {
     this.paused = true;
-    clearInterval(this.wallSpawnIntervalID);
-    clearInterval(this.courseObjectSpawnIntervalID);
   }
 
   playGame() {
     this.paused = false;
-    this._initWalls();
-    this._initBacks();
-  }
-
-  update() {
-    let self = this;
-
-    if (!self.paused) {
-      self.courseObjects.forEach( function ( element, index ) {
-        self.courseObjects[ index ].animate();
-      });
-
-      self.walls.forEach( function ( element, index ) {
-        self.walls[ index ].animate();
-      });
-    }
   }
 }
 

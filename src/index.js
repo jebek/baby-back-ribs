@@ -28,8 +28,7 @@ let turn = () => {
 
   let position = {
     x: paths[0].group.position.x + posX,
-    y: paths[0].group.position.y + 10,
-    z: paths[0].group.position.z + -60
+    y: paths[0].group.position.y
   }
 
   path = new Path(hero, position, turn);
@@ -42,8 +41,7 @@ let turn = () => {
 
   let posDelta = {
     x: position.x - paths[0].group.position.x,
-    y: position.y - paths[0].group.position.y,
-    z: position.z - paths[0].group.position.z
+    y: position.y - paths[0].group.position.y
   };
 
   hero.changeDirection(paths[0].direction, posDelta);
@@ -66,10 +64,10 @@ let initHero = () => {
 
   hero = new Hero( heroGeometry, heroMaterial );
 
-      goal = new THREE.Object3D;
-    window.hero = hero;
-    goal.position.set(0, 2, -2);
-    hero.mesh.add( goal );
+  goal = new THREE.Object3D;
+
+  goal.position.set(0, 2, -2);
+  hero.mesh.add( goal );
 
   scene.add( hero.mesh );
   
@@ -164,14 +162,23 @@ let gameOver = () => {
 
 let update = () => {
 
+  let isCollided;
+  
   hero.update();
 
-  paths[0].update();
+  paths.forEach(path => {
 
-  let isCollided = paths[0].detectCollisions();
-  let hitWall = paths[0].detectWall();
+    if (!path.paused) {
+      if ( path.group.position.z < PLANE_LENGTH ) {
+        path.group.position.z += 2;
 
-  if ( isCollided || hitWall) {
+        isCollided = path.detectCollisions();
+      }
+    }
+
+  });
+
+  if ( isCollided ) {
     cancelAnimationFrame(globalRenderID);
     gameOver();
   } else {
@@ -191,7 +198,6 @@ let update = () => {
 let render = () => {
   renderer.render( scene, camera );
 }
-window.render = render;
 
 let onWindowResize = () => {
 
