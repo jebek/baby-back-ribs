@@ -148,6 +148,12 @@ let initGame = () => {
     scene.remove(paths[0].group);
     paths.shift();
 
+    let position = {
+      x: hero.mesh.position.x,
+      y: 0,
+      z: 0
+    }
+
     path = new Path(hero, position, turn);
 
     path.initPlane();
