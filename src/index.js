@@ -144,6 +144,18 @@ let initGame = () => {
   };
 
   $restart.onclick = () => {
+
+    scene.remove(paths[0].group);
+    paths.shift();
+
+    path = new Path(hero, position, turn);
+
+    path.initPlane();
+    paths.push(path);
+
+    /* SCENE */
+    scene.add( path.group );
+
     runGame();
     $restart.classList.add('hidden');
   };
