@@ -3,11 +3,35 @@ import './styles/style.sass';
 
 import Hero from './components/hero-component.js';
 import Path from './components/path-component.js';
+import * as dat from 'dat.gui';
+import Stats from 'stats.js';
+
+const gui = new dat.GUI();
+
 
 const PLANE_LENGTH = 1000;
 const PLANE_WIDTH = 50;
 const PADDING = PLANE_WIDTH / 5 * 2;
 const COURSE_OBJECT_COUNT = 5;
+
+const stats = new Stats();
+stats.showPanel( 0 ); // 0: fps, 1: ms, 2: mb, 3+: custom
+document.body.appendChild( stats.dom );
+
+
+function animate() {
+
+  stats.begin();
+
+  // monitored code goes here
+
+  stats.end();
+
+  requestAnimationFrame( animate );
+
+}
+
+requestAnimationFrame( animate );
 
 let heroBaseY=1.8;
 let renderer,

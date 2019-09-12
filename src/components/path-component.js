@@ -74,7 +74,7 @@ class Path {
     /* TRACK */
     let planeGeometry = new THREE.BoxGeometry( PLANE_WIDTH, PLANE_LENGTH + PLANE_LENGTH / 10, 1 );
     let planeMaterial = new THREE.MeshLambertMaterial( {
-      color: 0x000000
+      color: 0x440c65
     } );
     this.plane = new THREE.Mesh( planeGeometry, planeMaterial );
     this.plane.rotation.x = -1.570;
