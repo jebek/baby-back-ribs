@@ -294,12 +294,14 @@ let pauseGame = () => {
 }
 
 let runGame = () => {
-
+  hero.spinning = false;
+  hero.jumping = false;
   paths[0].init();
   paths[0].playGame();
   setScore();
 
   update();
+  hero.mesh.rotation.z = 0;
 }
 
 initGame();
