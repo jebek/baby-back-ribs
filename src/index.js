@@ -58,7 +58,8 @@ let turn = () => {
   let opts = {
     pathLength: 1000,
     tacoDistance: -500,
-    burgerDistances: [-300, 0, 100, 150, 200, 250, 300]
+    burgerDistances: [-6, 3, 4, 5, 6, 7],
+    planeDistances: []
   }
 
   path = new Path(hero, position, turn, opts);
@@ -159,7 +160,8 @@ let initGame = () => {
   let opts = {
     pathLength: 1000,
     tacoDistance: -500,
-    burgerDistances: [-300, 0, 100, 150, 200, 250, 300]
+    burgerDistances: [ -3, -4, -5, -6, -7, -8, -9, -10],
+    planeDistances: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
   }
 
   path = new Path(hero, position, turn, opts);

@@ -14,7 +14,9 @@ class Path {
     this.turn = turn;
     this.tacoDistance = opts.tacoDistance;
     this.burgerDistances = opts.burgerDistances;
+    this.planeDistances = opts.planeDistances;
     this.paused = false;
+    this.pathSegmentsLength = 1;
   }
 
   _createWall(distance) {
@@ -57,11 +59,35 @@ class Path {
       flatShading: THREE.FlatShading
     });
 
-    let courseObject = new Back(geometry, objectMaterial, distance);
+    let courseObject = new Back(geometry, objectMaterial, distance * 50);
     this.group.add( courseObject.mesh );
   }
 
+  _createPlane(distance) {
+    let planeGeometry = new THREE.BoxGeometry( 10, 50, 1 );
+    let planeMaterial = new THREE.MeshLambertMaterial( {
+      color: 0x440c65
+    } );
+
+    let plane = new THREE.Mesh( planeGeometry, planeMaterial );
+
+    plane.position.z = distance * 50;
+    plane.rotation.x = -1.570;
+    plane.receiveShadow = true;
+
+    this.group.add( plane );
+  }
+
   init() {
+    if (this.planeDistances.length !== 0) {
+      this.group.remove(this.plane);
+
+      this.planeDistances.forEach(distance => {
+        this._createPlane(distance);
+      });
+
+      this.pathSegmentsLength = this.planeDistances.length;
+    }
 
     this._createWall(this.tacoDistance);
 
@@ -72,11 +98,13 @@ class Path {
 
   initPlane() {
     /* TRACK */
-    let planeGeometry = new THREE.BoxGeometry( 10, this.pathLength, 1 );
+    let planeGeometry = new THREE.BoxGeometry( 10, 1000, 1 );
     let planeMaterial = new THREE.MeshLambertMaterial( {
       color: 0x440c65
     } );
+
     this.plane = new THREE.Mesh( planeGeometry, planeMaterial );
+
     this.plane.rotation.x = -1.570;
     this.plane.receiveShadow = true;
 
@@ -106,7 +134,7 @@ class Path {
     let rayJump = new THREE.Raycaster( this.hero.mesh.position, new THREE.Vector3(0, -1, 0) );
     let rayCollision = new THREE.Raycaster( this.hero.mesh.position, new THREE.Vector3(0, 0, -1));
 
-    let courseObjects = this.group.children.slice(1);
+    let courseObjects = this.group.children.slice(this.pathSegmentsLength);
     let intersections = rayJump.intersectObjects( courseObjects );
     let collisionIntersections = rayCollision.intersectObjects( courseObjects );
 
