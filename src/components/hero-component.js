@@ -7,7 +7,7 @@ class Hero {
   constructor(geometry, material) {
     this.mesh = new THREE.Mesh( geometry, material );
     this.mesh.castShadow = true;
-    this.mesh.position.set( 0, 5, ( PLANE_LENGTH / 2 ) );
+    this.mesh.position.set( 0, 5, -40 );
     this.mesh.rotation.x = 0.485;
     this.gravity=0.01;
     this.bounceValue = 0;
@@ -67,7 +67,7 @@ class Hero {
       } else {
         this.heroBaseY += this.posDelta.y/10;
         this.mesh.position.x += this.posDelta.x/10;
-        this.mesh.position.y += this.posDelta.y/10;
+        // this.mesh.position.y += this.posDelta.y/10;
         return;
       }
     }

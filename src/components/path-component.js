@@ -2,23 +2,21 @@
 import Back from './back-component.js';
 import Wall from './wall-component.js';
 
-const PLANE_LENGTH = 1000;
-const PLANE_WIDTH = 10;
-const PADDING = PLANE_WIDTH / 5 * 2;
-
 class Path {
-  constructor(hero, position, turn) {
+  constructor(hero, position, turn, opts) {
     this.hero = hero;
     this.group = new THREE.Group();
     this.group.position.x = position ? position.x : 0;
     this.group.position.y = position ? position.y : 0;
-    this.group.position.z = 0;
+    this.group.position.z = -opts.pathLength/2;
 
     this.turn = turn;
+    this.tacoDistance = opts.tacoDistance;
+    this.burgerDistances = opts.burgerDistances;
     this.paused = false;
   }
 
-  _createWall() {
+  _createWall(distance) {
     const geometry = new THREE.BoxGeometry(20, 20, 2, 2);
     
     let objectMaterial = new THREE.MeshPhongMaterial( {
@@ -31,7 +29,7 @@ class Path {
 
     let rotation = 2 * this.plusOrMinus;
 
-    let courseObject = new Wall(geometry, objectMaterial, rotation);
+    let courseObject = new Wall(geometry, objectMaterial, rotation, distance);
 
     this.group.add( courseObject.mesh );
   }
@@ -64,15 +62,19 @@ class Path {
 
   init() {
 
-    this._createWall();
+    this._createWall(-500);
+    this._createBack(-300);
     this._createBack(0);
     this._createBack(100);
+    this._createBack(150);
+    this._createBack(200);
+    this._createBack(250);
     this._createBack(300);
   }
 
   initPlane() {
     /* TRACK */
-    let planeGeometry = new THREE.BoxGeometry( PLANE_WIDTH, PLANE_LENGTH + PLANE_LENGTH / 10, 1 );
+    let planeGeometry = new THREE.BoxGeometry( 10, 1000, 1 );
     let planeMaterial = new THREE.MeshLambertMaterial( {
       color: 0x440c65
     } );

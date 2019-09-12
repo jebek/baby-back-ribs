@@ -5,9 +5,9 @@ const PADDING = PLANE_WIDTH / 5 * 2;
 const COURSE_OBJECT_COUNT = 5;
 
 class Wall {
-  constructor(geometry, material, rotation) {
+  constructor(geometry, material, rotation, distance) {
     this.mesh = new THREE.Mesh( geometry, material );
-    this.mesh.position.set( 0, 10, -( PLANE_LENGTH - PADDING ) / 7);
+    this.mesh.position.set( 0, 10, distance );
     this.mesh.castShadow = true;
     this.mesh.receiveShadow = true;
     this.mesh.rotation.y = rotation;

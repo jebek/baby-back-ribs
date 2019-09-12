@@ -55,7 +55,13 @@ let turn = () => {
     y: paths[0].group.position.y
   }
 
-  path = new Path(hero, position, turn);
+  let opts = {
+    pathLength: 1000,
+    tacoDistance: 500,
+    burgerDistances: [100, 200, 300]
+  }
+
+  path = new Path(hero, position, turn, opts);
   path.initPlane();
   path.init();
   paths.push(path);
@@ -132,7 +138,7 @@ let initGame = () => {
 
   /* CAMERA */
   camera = new THREE.PerspectiveCamera( 45, canvasWidth / canvasHeight, 1, 3000 );
-  camera.position.set( 0, PLANE_LENGTH / 125, PLANE_LENGTH / 2 + PLANE_LENGTH / 25 );
+  camera.position.set( 0, 10, 0 );
 
   /* LIGHTS */
   let directionalLight = new THREE.DirectionalLight( 0xffffff, 1 );
@@ -143,13 +149,20 @@ let initGame = () => {
   /* HERO */
   initHero();
 
+  camera.lookAt( hero.mesh.position );
   let position = {
     x: 0,
     y: 0,
     z: 0
   }
 
-  path = new Path(hero, position, turn);
+  let opts = {
+    pathLength: 1000,
+    tacoDistance: 500,
+    burgerDistances: [100, 200, 300]
+  }
+
+  path = new Path(hero, position, turn, opts);
 
   path.initPlane();
   paths.push(path);
@@ -178,7 +191,7 @@ let initGame = () => {
       z: 0
     }
 
-    path = new Path(hero, position, turn);
+    path = new Path(hero, position, turn, opts);
 
     path.initPlane();
     paths.push(path);
@@ -230,9 +243,9 @@ let update = () => {
 
   if (hero.turn) {
     camera.position.x = hero.mesh.position.x;
-    camera.position.y = hero.mesh.position.y + 3;
-    camera.position.z = hero.mesh.position.z + 40;
-    camera.lookAt( hero.mesh.position );
+    // camera.position.y = hero.mesh.position.y + 3;
+    // camera.position.z = hero.mesh.position.z + 40;
+    //camera.lookAt( hero.mesh.position );
   }
 }
 
