@@ -149,13 +149,13 @@ class Path {
     }
 
 
-    if ( intersections.length > 0 && intersections[0].distance < 0.2) {
+    if ( intersections.length > 0 && intersections[0].distance < 2) {
       this.hero.jump();
       this.hero.spinAvailable = true;
       return false;
     }
 
-    if ( collisionIntersections.length > 0 && collisionIntersections[0].distance < 5) {
+    if ( collisionIntersections.length > 0 && collisionIntersections[0].distance < 3.5) {
       let isWall = collisionIntersections[0].object.geometry.type === "BoxGeometry";
 
       if (isWall) {
