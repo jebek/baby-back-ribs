@@ -14,17 +14,18 @@ class Hero {
     this.spinValue = 0;
     this.spinDirection = 'left';
     this.spinning = false;
+    this.spinAvailable = true;
     this.turn = false;
     this.heroBaseY=1.8;
     this.heroBaseX=0;
   }
 
   spin(direction) {
-
-    if (this.spinning) {
+    if (!this.spinAvailable) {
       return;
     }
 
+    this.spinAvailable = false;
     this.spinDirection = direction;
     this.spinning = true;
     this.mesh.rotation.y += 0.4;
@@ -73,6 +74,7 @@ class Hero {
     }
 
     if (this.mesh.position.y<=this.heroBaseY) {
+
       if (this.jumping) {
         this.jumping = false;
       } else {
