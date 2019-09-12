@@ -18,6 +18,7 @@ class Hero {
     this.turn = false;
     this.heroBaseY=1.8;
     this.heroBaseX=0;
+    this.score = 0;
   }
 
   spin(direction) {

@@ -86,6 +86,13 @@ let turn = () => {
   }, 300);
 };
 
+let setScore = () => {
+  let hiScore = window.localStorage.getItem('iwmbbr');
+  document.querySelector('#score').innerHTML = 0;
+  document.querySelector('#hi-score').innerHTML = hiScore ? hiScore : 0;
+  hero.score = 0;
+};  
+
 let initHero = () => {
 
   let heroGeometry = new THREE.OctahedronGeometry( 1.5 );
@@ -153,6 +160,8 @@ let initGame = () => {
   /* HERO */
   initHero();
 
+  setScore();
+
   camera.lookAt( hero.mesh.position );
   let position = {
     x: 0,
@@ -214,7 +223,7 @@ let initGame = () => {
 
 let gameOver = () => {
   let $restart = document.querySelector('#restart');
-
+  window.localStorage.setItem('iwmbbr', hero.score);
   paths[0].pauseGame();
 
   $restart.classList.remove('hidden');
@@ -275,6 +284,7 @@ let runGame = () => {
 
   paths[0].init();
   paths[0].playGame();
+  setScore();
 
   update();
 }

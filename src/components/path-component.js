@@ -130,6 +130,10 @@ class Path {
     }
   }
 
+  addScore(pts) {
+    document.querySelector('#score').innerHTML = this.hero.score += pts;
+  }
+
   detectCollisions() {
     let rayJump = new THREE.Raycaster( this.hero.mesh.position, new THREE.Vector3(0, -1, 0) );
     let rayCollision = new THREE.Raycaster( this.hero.mesh.position, new THREE.Vector3(0, 0, -1));
@@ -152,6 +156,7 @@ class Path {
     if ( intersections.length > 0 && intersections[0].distance < 2) {
       this.hero.jump();
       this.hero.spinAvailable = true;
+      this.addScore(5);
       return false;
     }
 
@@ -161,6 +166,8 @@ class Path {
       if (isWall) {
         if (this.hero.spinning && this.direction === this.hero.spinDirection) {
           this.turn();
+
+          this.addScore(10);
           this.hero.spinAvailable = true;
           return false;
         } else {
