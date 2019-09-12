@@ -5,10 +5,11 @@ import Wall from './wall-component.js';
 class Path {
   constructor(hero, position, turn, opts) {
     this.hero = hero;
+    this.pathLength = opts.pathLength;
     this.group = new THREE.Group();
     this.group.position.x = position ? position.x : 0;
     this.group.position.y = position ? position.y : 0;
-    this.group.position.z = -opts.pathLength/2;
+    this.group.position.z = -this.pathLength/2;
 
     this.turn = turn;
     this.tacoDistance = opts.tacoDistance;
@@ -62,19 +63,16 @@ class Path {
 
   init() {
 
-    this._createWall(-500);
-    this._createBack(-300);
-    this._createBack(0);
-    this._createBack(100);
-    this._createBack(150);
-    this._createBack(200);
-    this._createBack(250);
-    this._createBack(300);
+    this._createWall(this.tacoDistance);
+
+    this.burgerDistances.forEach(distance => {
+      this._createBack(distance);
+    });
   }
 
   initPlane() {
     /* TRACK */
-    let planeGeometry = new THREE.BoxGeometry( 10, 1000, 1 );
+    let planeGeometry = new THREE.BoxGeometry( 10, this.pathLength, 1 );
     let planeMaterial = new THREE.MeshLambertMaterial( {
       color: 0x440c65
     } );
