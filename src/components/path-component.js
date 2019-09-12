@@ -3,7 +3,8 @@ import Back from './back-component.js';
 import Wall from './wall-component.js';
 
 class Path {
-  constructor(hero, position, turn, opts) {
+  constructor(heroContainer, hero, position, turn, opts) {
+    this.heroContainer = heroContainer;
     this.hero = hero;
     this.pathLength = opts.pathLength;
     this.group = new THREE.Group();
@@ -130,13 +131,21 @@ class Path {
   }
 
   detectCollisions() {
-
     let rayJump = new THREE.Raycaster( this.hero.mesh.position, new THREE.Vector3(0, -1, 0) );
     let rayCollision = new THREE.Raycaster( this.hero.mesh.position, new THREE.Vector3(0, 0, -1));
 
     let courseObjects = this.group.children.slice(this.pathSegmentsLength);
     let intersections = rayJump.intersectObjects( courseObjects );
     let collisionIntersections = rayCollision.intersectObjects( courseObjects );
+
+    let path = this.group.children.slice(0, this.pathSegmentsLength);
+    let pathIntersections = rayJump.intersectObjects( path );
+
+    if ( pathIntersections.length > 0 ) {
+      this.heroContainer.position.y = pathIntersections[0].point.y + 0.1;
+    } else if (this.hero.mesh.position.y <= 1.8) {
+      this.heroContainer.position.y -= 0.5;
+    }
 
 
     if ( intersections.length > 0 && intersections[0].distance < 2) {

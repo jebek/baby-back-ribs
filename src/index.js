@@ -36,6 +36,7 @@ requestAnimationFrame( animate );
 let heroBaseY=1.8;
 let renderer,
   hero,
+  heroContainer,
   goal,
   scene,
   camera,
@@ -62,7 +63,7 @@ let turn = () => {
     planeDistances: []
   }
 
-  path = new Path(hero, position, turn, opts);
+  path = new Path(heroContainer, hero, position, turn, opts);
   path.initPlane();
   path.init();
   paths.push(path);
@@ -99,8 +100,10 @@ let initHero = () => {
 
   goal.position.set(0, 2, -2);
   hero.mesh.add( goal );
+  heroContainer = new THREE.Object3D;
+  heroContainer.add(hero.mesh);
 
-  scene.add( hero.mesh );
+  scene.add( heroContainer );
   
   window.addEventListener( 'keydown', () => {
 
@@ -164,7 +167,7 @@ let initGame = () => {
     planeDistances: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
   }
 
-  path = new Path(hero, position, turn, opts);
+  path = new Path(heroContainer, hero, position, turn, opts);
 
   path.initPlane();
   paths.push(path);
@@ -193,7 +196,7 @@ let initGame = () => {
       z: 0
     }
 
-    path = new Path(hero, position, turn, opts);
+    path = new Path(heroContainer, hero, position, turn, opts);
 
     path.initPlane();
     paths.push(path);
