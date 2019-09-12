@@ -3,6 +3,7 @@ import './styles/style.sass';
 
 import Hero from './components/hero-component.js';
 import Path from './components/path-component.js';
+import Background from './components/background-component.js';
 import * as dat from 'dat.gui';
 import Stats from 'stats.js';
 
@@ -43,6 +44,7 @@ let renderer,
   globalRenderID,
   canvasWidth,
   canvasHeight,
+  hiScore,
   path,
   paths = [];
 
@@ -87,7 +89,7 @@ let turn = () => {
 };
 
 let setScore = () => {
-  let hiScore = window.localStorage.getItem('iwmbbr');
+  hiScore = window.localStorage.getItem('iwmbbr');
   document.querySelector('#score').innerHTML = 0;
   document.querySelector('#hi-score').innerHTML = hiScore ? hiScore : 0;
   hero.score = 0;
@@ -96,6 +98,7 @@ let setScore = () => {
 let initHero = () => {
 
   let heroGeometry = new THREE.OctahedronGeometry( 1.5 );
+  heroGeometry.scale(0.7, 1, 0.7);
   let heroMaterial = new THREE.MeshLambertMaterial( {
   color: 0xE91E63,
   flatShading: THREE.FlatShading
@@ -130,6 +133,13 @@ let initHero = () => {
   } );
 }
 
+let initBackground = () => {
+
+  let background = new Background();
+
+  scene.add(background);
+}
+
 let initGame = () => {
   let canvas = document.querySelector('#game');
 
@@ -153,7 +163,7 @@ let initGame = () => {
 
   /* LIGHTS */
   let directionalLight = new THREE.DirectionalLight( 0xffffff, 1 );
-  directionalLight.position.set( 0, 1, 0 );
+  directionalLight.position.set( -1, 1, 0 );
   let hemisphereLight = new THREE.HemisphereLight( 0xFFB74D, 0x37474F, 1 );
   hemisphereLight.position.y = 500;
 
@@ -161,6 +171,8 @@ let initGame = () => {
   initHero();
 
   setScore();
+
+  initBackground();
 
   camera.lookAt( hero.mesh.position );
   let position = {
@@ -223,7 +235,8 @@ let initGame = () => {
 
 let gameOver = () => {
   let $restart = document.querySelector('#restart');
-  window.localStorage.setItem('iwmbbr', hero.score);
+  hiScore = hero.score > hiScore ? hero.score : hiScore;
+  window.localStorage.setItem('iwmbbr', hiScore);
   paths[0].pauseGame();
 
   $restart.classList.remove('hidden');

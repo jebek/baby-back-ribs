@@ -7,7 +7,7 @@ class Hero {
   constructor(geometry, material) {
     this.mesh = new THREE.Mesh( geometry, material );
     this.mesh.castShadow = true;
-    this.mesh.position.set( 0, 5, -40 );
+    this.mesh.position.set( 0, 5, -25 );
     this.mesh.rotation.x = 0.485;
     this.gravity=0.01;
     this.bounceValue = 0;
