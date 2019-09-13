@@ -3,6 +3,7 @@ import './styles/style.sass';
 
 import Hero from './components/hero-component.js';
 import Path from './components/path-component.js';
+import Ribs from './components/ribs-component.js';
 import Background from './components/background-component.js';
 import * as dat from 'dat.gui';
 import Stats from 'stats.js';
@@ -45,6 +46,7 @@ let renderer,
   canvasWidth,
   canvasHeight,
   hiScore,
+  ribs,
   path,
   paths = [];
 
@@ -136,8 +138,9 @@ let initHero = () => {
 let initBackground = () => {
 
   let background = new Background();
+  ribs = new Ribs();
 
-  scene.add(background);
+  scene.add(background, ribs);
 }
 
 let initGame = () => {
@@ -166,6 +169,9 @@ let initGame = () => {
   directionalLight.position.set( -1, 1, 0 );
   let hemisphereLight = new THREE.HemisphereLight( 0xFFB74D, 0x37474F, 1 );
   hemisphereLight.position.y = 500;
+
+  // let spotLight = new THREE.SpotLight( 0xffffff )
+  // spotLight.position.set( 0, 50, -400)
 
   /* HERO */
   initHero();
@@ -296,6 +302,7 @@ let pauseGame = () => {
 let runGame = () => {
   hero.spinning = false;
   hero.jumping = false;
+  hero.spinValue = 0;
   paths[0].init();
   paths[0].playGame();
   setScore();

@@ -7,7 +7,7 @@ class Background extends THREE.Group {
       {
         uniforms: {
           t: { type: 'c', value: new THREE.Color(0x293462) },
-          b: { type: 'c', value: new THREE.Color(0x00818a) }
+          b: { type: 'c', value: new THREE.Color(0x3a1f5d) }
         },
         vertexShader: `
           varying vec3 v;
