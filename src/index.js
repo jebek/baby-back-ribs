@@ -30,12 +30,15 @@ let renderer,
   planeMaterial,
   planeMaterial2,
   planeMaterial3,
+  updateScore,
+  opts,
   g,
   g2,
   g3,
   paths = [],
   initial = true,
   gameRunning = false;
+
 
 let turn = () => {
   pauseGame();
@@ -47,12 +50,38 @@ let turn = () => {
     y: paths[0].group.position.y
   }
 
-  let opts = {
+  opts = {
     pathLength: 1000,
     tacoDistance: -500,
-    burgerDistances: [-6, 3, 4, 5, 6, 7],
-    planeDistances: [],
+    burgerDistances: [ 2, 0, -2, -5, -8],
+    planeDistances: [-10, -9, -7, -5, -4, -2, -1, 0, 3, 4, 5, 6, 7, 8, 9, 10],
     setScore: updateScore
+  }
+
+  if (hero.score > 100) {
+    opts = {
+      pathLength: 1000,
+      tacoDistance: -500,
+      burgerDistances: [ 3, 1, 0, -2, -5, -8],
+      planeDistances: [ -5,-4, -2, -1, 1, 2, 4, 5, 6, 7, 8, 9, 10],
+      setScore: updateScore
+    }
+  } else if (hero.score > 150) {
+    opts = {
+      pathLength: 1000,
+      tacoDistance: -500,
+      burgerDistances: [ 3, 1, 0, -2, -3, -5, -8],
+      planeDistances: [ -4, -1, 1, 2, 4, 5, 6, 7, 8, 9, 10],
+      setScore: updateScore
+    }
+  } else if (hero.score > 250) {
+    opts = {
+      pathLength: 1000,
+      tacoDistance: -500,
+      burgerDistances: [ 3, 1, 0, -2, -5, -8],
+      planeDistances: [ 4, 5, 6, 7, 8, 9, 10],
+      setScore: updateScore
+    }
   }
 
   path = new Path(heroContainer, hero, position, turn, opts);
@@ -94,14 +123,6 @@ let start = () => {
       x: hero.mesh.position.x,
       y: 0,
       z: 0
-    }
-
-    let opts = {
-      pathLength: 1000,
-      tacoDistance: -500,
-      burgerDistances: [ -3, -4, -5, -6, -7, -8, -9, -10],
-      planeDistances: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
-      setScore: updateScore
     }
 
     path = new Path(heroContainer, hero, position, turn, opts);
@@ -235,9 +256,7 @@ let initText = () => {
   scene.add(plane, plane2, plane3);
 }
 
-
-
-let updateScore = (score) => {
+updateScore = (score) => {
   hiScore = window.localStorage.getItem('iwmbbr');
 
   let text = "Score: " + score;
@@ -257,6 +276,16 @@ let updateScore = (score) => {
   g2.fillText(hiScoreText, 50, 64);
   planeMaterial2.map.needsUpdate = true;
 }
+
+opts = {
+  pathLength: 1000,
+  tacoDistance: -500,
+  burgerDistances: [ 3, 0, -2, -5, -8],
+  planeDistances: [-10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+  setScore: updateScore
+}
+
+
 
 let initBackground = () => {
 
@@ -312,14 +341,6 @@ let initGame = () => {
     z: 0
   }
 
-  let opts = {
-    pathLength: 1000,
-    tacoDistance: -500,
-    burgerDistances: [ -3, -4, -5, -6, -7, -8, -9, -10],
-    planeDistances: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
-    setScore: updateScore
-  }
-
   path = new Path(heroContainer, hero, position, turn, opts);
 
   path.initPlane();
@@ -368,10 +389,9 @@ let update = () => {
         isCollided = path.detectCollisions();
       }
     }
-
   });
 
-  if ( isCollided ) {
+  if ( isCollided || heroContainer.position.y < -2) {
     gameOver();
   }
 
