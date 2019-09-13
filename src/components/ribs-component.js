@@ -36,7 +36,7 @@ class Ribs extends THREE.Group {
     this.mesh2.position.set( 0, -1, 10)
 
 
-    this.light = new THREE.SpotLight( 0xffffff, 1.3, 300, .3 )
+    this.light = new THREE.SpotLight( 0xffffff, 1.3, 300, .07 )
     this.light.position.set( 0, 50, 200)
     this.light.target = this.mesh2
 

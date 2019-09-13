@@ -23,7 +23,7 @@ class Path {
   _createWall(distance) {
     const geometry = new THREE.BoxGeometry(20, 20, 2, 2);
     
-    let objectMaterial = new THREE.MeshPhongMaterial( {
+    let objectMaterial = new THREE.MeshLambertMaterial( {
       color: 0xffa500,
       flatShading: THREE.FlatShading
     });
@@ -55,13 +55,13 @@ class Path {
     const detail = 2;
     const geometry = new THREE.PolyhedronBufferGeometry(verticesOfCube, indicesOfFaces, radius, detail);
     
-    let objectMaterial = new THREE.MeshPhongMaterial( {
-      color: 0x29B6F6,
+    let objectMaterial = new THREE.MeshLambertMaterial( {
+      color: 0xEF982E,
       flatShading: THREE.FlatShading
     });
 
     let courseObject = new Back(geometry, objectMaterial, distance * 50);
-    this.group.add( courseObject.mesh );
+    this.group.add( courseObject );
   }
 
   _createPlane(distance) {
@@ -138,7 +138,13 @@ class Path {
     let rayJump = new THREE.Raycaster( this.hero.mesh.position, new THREE.Vector3(0, -1, 0) );
     let rayCollision = new THREE.Raycaster( this.hero.mesh.position, new THREE.Vector3(0, 0, -1));
 
-    let courseObjects = this.group.children.slice(this.pathSegmentsLength);
+    let courseObjects = this.group.children.slice(this.pathSegmentsLength).map(obj => {
+      if (typeof obj.mesh === 'undefined') {
+        return obj
+      } else {
+        return obj.mesh
+      }
+    });
     let intersections = rayJump.intersectObjects( courseObjects );
     let collisionIntersections = rayCollision.intersectObjects( courseObjects );
 
