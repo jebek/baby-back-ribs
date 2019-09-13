@@ -18,6 +18,7 @@ class Path {
     this.planeDistances = opts.planeDistances;
     this.paused = true;
     this.pathSegmentsLength = 1;
+    this.setScore = opts.setScore;
   }
 
   _createWall(distance) {
@@ -131,7 +132,7 @@ class Path {
   }
 
   addScore(pts) {
-    document.querySelector('#score').innerHTML = this.hero.score += pts;
+    this.setScore(this.hero.score += pts)
   }
 
   detectCollisions() {
@@ -160,7 +161,7 @@ class Path {
     }
 
 
-    if ( intersections.length > 0 && intersections[0].distance < 2) {
+    if ( intersections.length > 0 && intersections[0].distance < 1) {
       this.hero.jump();
       this.hero.spinAvailable = true;
       this.addScore(5);
@@ -174,7 +175,7 @@ class Path {
         if (this.hero.spinning && this.direction === this.hero.spinDirection) {
           this.turn();
 
-          this.addScore(10);
+          this.addScore(20);
           this.hero.spinAvailable = true;
           return false;
         } else {

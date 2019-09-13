@@ -1,14 +1,9 @@
-import _ from 'lodash';
 import './styles/style.sass';
 
 import Hero from './components/hero-component.js';
 import Path from './components/path-component.js';
 import Ribs from './components/ribs-component.js';
 import Background from './components/background-component.js';
-import * as dat from 'dat.gui';
-import Stats from 'stats.js';
-
-const gui = new dat.GUI();
 
 
 const PLANE_LENGTH = 1000;
@@ -23,12 +18,24 @@ let renderer,
   goal,
   scene,
   camera,
+  user,
   canvasWidth,
   canvasHeight,
   hiScore,
   ribs,
   path,
-  paths = [];
+  bitmap,
+  bitmap2,
+  bitmap3,
+  planeMaterial,
+  planeMaterial2,
+  planeMaterial3,
+  g,
+  g2,
+  g3,
+  paths = [],
+  initial = true,
+  gameRunning = false;
 
 let turn = () => {
   pauseGame();
@@ -44,7 +51,8 @@ let turn = () => {
     pathLength: 1000,
     tacoDistance: -500,
     burgerDistances: [-6, 3, 4, 5, 6, 7],
-    planeDistances: []
+    planeDistances: [],
+    setScore: updateScore
   }
 
   path = new Path(heroContainer, hero, position, turn, opts);
@@ -70,12 +78,43 @@ let turn = () => {
   }, 300);
 };
 
-let setScore = () => {
-  hiScore = window.localStorage.getItem('iwmbbr');
-  document.querySelector('#score').innerHTML = 0;
-  document.querySelector('#hi-score').innerHTML = hiScore ? hiScore : 0;
-  hero.score = 0;
-};  
+let start = () => {
+
+  g3.clearRect(0, 0, 512, 128);
+  planeMaterial3.map.needsUpdate = true;
+
+  if (initial) {
+    runGame();
+    initial = false;
+  } else {
+    scene.remove(paths[0].group);
+    paths.shift();
+
+    let position = {
+      x: hero.mesh.position.x,
+      y: 0,
+      z: 0
+    }
+
+    let opts = {
+      pathLength: 1000,
+      tacoDistance: -500,
+      burgerDistances: [ -3, -4, -5, -6, -7, -8, -9, -10],
+      planeDistances: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+      setScore: updateScore
+    }
+
+    path = new Path(heroContainer, hero, position, turn, opts);
+
+    path.initPlane();
+    paths.push(path);
+
+    /* SCENE */
+    scene.add( path.group );
+
+    runGame();
+  }
+}
 
 let initHero = () => {
 
@@ -98,6 +137,10 @@ let initHero = () => {
   scene.add( heroContainer );
   
   window.addEventListener( 'keydown', () => {
+    if (!gameRunning) {
+      start();
+      gameRunning = true;
+    }
 
     if ( event.keyCode === 37 ) {
       hero.spin('left');
@@ -113,6 +156,106 @@ let initHero = () => {
       hero.jump();
     }
   } );
+}
+
+let initText = () => {
+  let text = "Score: ";
+  bitmap = document.createElement('canvas');
+  g = bitmap.getContext('2d');
+  bitmap.width = 512;
+  bitmap.height = 128;
+  bitmap.background = 'transparent';
+  g.font = 'bold 48px helvetica';
+
+  g.fillStyle = '#FFD300';
+  g.fillText(text, 170, bitmap.height / 2);
+  let texture = new THREE.Texture(bitmap) 
+  texture.needsUpdate = true;
+
+  let planeGeometry = new THREE.PlaneGeometry(60, 20, 1, 1);
+  planeMaterial = new THREE.MeshBasicMaterial({
+    map: texture,
+    transparent: true,
+    depthTest: false
+  });
+  let plane = new THREE.Mesh(planeGeometry, planeMaterial);
+  plane.position.z = -200;
+  plane.position.y = 70;
+
+
+  let hiScoreText = "High Score: ";
+  bitmap2 = document.createElement('canvas');
+  g2 = bitmap2.getContext('2d');
+  bitmap2.width = 512;
+  bitmap2.height = 128;
+  bitmap2.background = 'transparent';
+  g2.font = 'bold 48px helvetica';
+
+  g2.fillStyle = '#FFD300';
+  g2.fillText(hiScoreText, 50, bitmap2.height / 2);
+
+  let texture2 = new THREE.Texture(bitmap2) 
+  texture2.needsUpdate = true;
+
+  let planeGeometry2 = new THREE.PlaneGeometry(60, 20, 1, 1);
+  planeMaterial2 = new THREE.MeshBasicMaterial({
+    map: texture2,
+    transparent: true,
+    depthTest: false
+  });
+  let plane2 = new THREE.Mesh(planeGeometry2, planeMaterial2);
+  plane2.position.z = -200;
+  plane2.position.y = 80;
+
+  let startText = "Press any key to start";
+  bitmap3 = document.createElement('canvas');
+  g3 = bitmap3.getContext('2d');
+  bitmap3.width = 512;
+  bitmap3.height = 128;
+  bitmap3.background = 'transparent';
+  g3.font = 'bold 36px helvetica';
+
+  g3.fillStyle = '#FFD300';
+  g3.fillText(startText, 50, bitmap3.height / 2);
+
+  let texture3 = new THREE.Texture(bitmap3) 
+  texture3.needsUpdate = true;
+
+  let planeGeometry3 = new THREE.PlaneGeometry(60, 20, 1, 1);
+  planeMaterial3 = new THREE.MeshBasicMaterial({
+    map: texture3,
+    transparent: true,
+    depthTest: false
+  });
+  let plane3 = new THREE.Mesh(planeGeometry3, planeMaterial3);
+  plane3.position.z = -200;
+  plane3.position.y = 50;
+
+
+  scene.add(plane, plane2, plane3);
+}
+
+
+
+let updateScore = (score) => {
+  hiScore = window.localStorage.getItem('iwmbbr');
+
+  let text = "Score: " + score;
+
+  g.clearRect(0, 0, 512, 128);
+  planeMaterial.opacity = 1;
+  g.font = 'bold 48px helvetica';
+  g.fillText(text, 170, 56);
+  planeMaterial.map.needsUpdate = true;
+
+
+  hiScore = score > hiScore ? score : hiScore;
+  let hiScoreText = 'High Score: ' + hiScore;
+  g2.clearRect(0, 0, 512, 128);
+  planeMaterial2.opacity = 1;
+  g2.font = 'bold 48px helvetica';
+  g2.fillText(hiScoreText, 50, 64);
+  planeMaterial2.map.needsUpdate = true;
 }
 
 let initBackground = () => {
@@ -156,9 +299,11 @@ let initGame = () => {
   /* HERO */
   initHero();
 
-  setScore();
 
   initBackground();
+  initText();
+
+  updateScore(0);
 
   camera.lookAt( hero.mesh.position );
   let position = {
@@ -171,7 +316,8 @@ let initGame = () => {
     pathLength: 1000,
     tacoDistance: -500,
     burgerDistances: [ -3, -4, -5, -6, -7, -8, -9, -10],
-    planeDistances: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+    planeDistances: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+    setScore: updateScore
   }
 
   path = new Path(heroContainer, hero, position, turn, opts);
@@ -179,41 +325,13 @@ let initGame = () => {
   path.initPlane();
   paths.push(path);
 
+  user = new THREE.Group();
+  user.add(camera);
+
   /* SCENE */
-  scene.add( camera, directionalLight, hemisphereLight, paths[0].group );
+  scene.add( user, directionalLight, hemisphereLight, paths[0].group );
 
   render();
-
-  let $start = document.querySelector('#start');
-  let $restart = document.querySelector('#restart');
-
-  $start.onclick = () => {
-    runGame();
-    $start.classList.add('hidden');
-  };
-
-  $restart.onclick = () => {
-
-    scene.remove(paths[0].group);
-    paths.shift();
-
-    let position = {
-      x: hero.mesh.position.x,
-      y: 0,
-      z: 0
-    }
-
-    path = new Path(heroContainer, hero, position, turn, opts);
-
-    path.initPlane();
-    paths.push(path);
-
-    /* SCENE */
-    scene.add( path.group );
-
-    runGame();
-    $restart.classList.add('hidden');
-  };
 
   window.addEventListener( 'resize', onWindowResize );
   onWindowResize();
@@ -223,12 +341,17 @@ let initGame = () => {
 }
 
 let gameOver = () => {
-  let $restart = document.querySelector('#restart');
-  hiScore = hero.score > hiScore ? hero.score : hiScore;
-  window.localStorage.setItem('iwmbbr', hiScore);
   paths[0].pauseGame();
+  hero.score = 0;
 
-  $restart.classList.remove('hidden');
+  setTimeout(()=> {
+    g3.clearRect(0, 0, 512, 128);
+    planeMaterial3.opacity = 1;
+    g3.font = 'bold 36px helvetica';
+    g3.fillText('Press any key to start', 50, 56);
+    planeMaterial3.map.needsUpdate = true;
+    gameRunning = false;
+  }, 2000)
 }
 
 let update = () => {
@@ -289,7 +412,8 @@ let runGame = () => {
   hero.spinValue = 0;
   paths[0].init();
   paths[0].playGame();
-  setScore();
+  updateScore(0);
+  gameRunning = true;
 
   update();
   hero.mesh.rotation.z = 0;
