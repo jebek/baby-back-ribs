@@ -16,7 +16,7 @@ class Path {
     this.tacoDistance = opts.tacoDistance;
     this.burgerDistances = opts.burgerDistances;
     this.planeDistances = opts.planeDistances;
-    this.paused = false;
+    this.paused = true;
     this.pathSegmentsLength = 1;
   }
 
@@ -145,6 +145,7 @@ class Path {
         return obj.mesh
       }
     });
+
     let intersections = rayJump.intersectObjects( courseObjects );
     let collisionIntersections = rayCollision.intersectObjects( courseObjects );
 

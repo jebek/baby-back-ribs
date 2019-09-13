@@ -16,25 +16,6 @@ const PLANE_WIDTH = 50;
 const PADDING = PLANE_WIDTH / 5 * 2;
 const COURSE_OBJECT_COUNT = 5;
 
-const stats = new Stats();
-stats.showPanel( 0 ); // 0: fps, 1: ms, 2: mb, 3+: custom
-document.body.appendChild( stats.dom );
-
-
-function animate() {
-
-  stats.begin();
-
-  // monitored code goes here
-
-  stats.end();
-
-  requestAnimationFrame( animate );
-
-}
-
-requestAnimationFrame( animate );
-
 let heroBaseY=1.8;
 let renderer,
   hero,
@@ -42,7 +23,6 @@ let renderer,
   goal,
   scene,
   camera,
-  globalRenderID,
   canvasWidth,
   canvasHeight,
   hiScore,
@@ -237,6 +217,9 @@ let initGame = () => {
 
   window.addEventListener( 'resize', onWindowResize );
   onWindowResize();
+
+  document.body.appendChild( THREE.WEBVR.createButton( renderer ) );
+  renderer.vr.enabled = true;
 }
 
 let gameOver = () => {
@@ -266,24 +249,25 @@ let update = () => {
   });
 
   if ( isCollided ) {
-    cancelAnimationFrame(globalRenderID);
     gameOver();
-  } else {
-    globalRenderID = requestAnimationFrame(update);
-    render();
   }
 
 
   if (hero.turn) {
-    camera.position.x = hero.mesh.position.x;
-    // camera.position.y = hero.mesh.position.y + 3;
-    // camera.position.z = hero.mesh.position.z + 40;
-    //camera.lookAt( hero.mesh.position );
+    camera.position.y = hero.mesh.position.y + 3;
+    camera.position.z = hero.mesh.position.z + 40;
+  } else {
+    camera.position.y = 10;
   }
+
+    camera.position.x = hero.mesh.position.x;
 }
 
 let render = () => {
-  renderer.render( scene, camera );
+  renderer.setAnimationLoop(() => {
+    renderer.render( scene, camera );
+    update();
+  });
 }
 
 let onWindowResize = () => {
